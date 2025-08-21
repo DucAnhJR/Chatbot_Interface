@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Demo</title>
+    <link rel="stylesheet" href="styles.css">
+    <title>FPT University Academic Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        /* Header */
+        .header {
+            background-color: #e8e8e8;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #333;
+            font-weight: normal;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .app-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .app-button {
+            height: 40px;
+            border-radius: 5px;
+        }
+
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .status-buttons {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .status-btn {
+            padding: 2px 8px;
+            font-size: 10px;
+            border-radius: 3px;
+            color: white;
+        }
+
+        .status-btn.green { background-color: #4CAF50; }
+        .status-btn.blue { background-color: #2196F3; }
+
+        /* Loading indicator */
+        .loading {
+            padding: 5px 20px;
+            background-color: #f0f0f0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Main banner */
+        .main-banner {
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 50%, #7986cb 100%);
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .banner-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 2px, transparent 2px),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 2px, transparent 2px);
+            background-size: 50px 50px;
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            flex: 1;
+        }
+
+        .fpt-logo {
+            background-color: white;
+            color: #1a237e;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .banner-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .banner-subtitle {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .banner-description {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .ranking-info {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+        }
+
+        .ranking-badge {
+            background-color: #e91e63;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* Content area */
+        .content-wrapper {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* News section */
+        .news-section {
+            width: 200px;
+        }
+
+        .section-header {
+            background-color: #1976d2;
+            color: white;
+            padding: 8px 15px;
+            font-weight: bold;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .news-content {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            padding: 10px;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .news-item {
+            color: #1976d2;
+            text-decoration: none;
+            font-size: 12px;
+            display: block;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .news-item:hover {
+            text-decoration: underline;
+        }
+
+        /* Important notice */
+        .important-notice {
+            margin-top: 20px;
+        }
+
+        .notice-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            font-weight: bold;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .notice-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            font-size: 11px;
+        }
+
+        .notice-table th {
+            background-color: #f5f5f5;
+            padding: 5px;
+            border: 1px solid #ddd;
+            font-weight: bold;
+        }
+
+        .notice-table td {
+            padding: 5px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        .notice-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .content-section {
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .content-section-header {
+            background-color: #ff9800;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+        }
+
+        .content-section-body {
+            padding: 15px;
+        }
+
+        .content-list {
+            list-style: none;
+        }
+
+        .content-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .content-list li:last-child {
+            border-bottom: none;
+        }
+
+        .content-list a {
+            color: #1976d2;
+            text-decoration: none;
+        }
+
+        .content-list a:hover {
+            text-decoration: underline;
+        }
+
+        .new-badge {
+            background-color: #f44336;
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+        }
+
+        .footer a {
+            color: #1976d2;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .news-section {
+                width: 100%;
+            }
+            
+            .main-banner {
+                height: auto;
+                padding: 20px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .ranking-info {
+                position: static;
+                transform: none;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>FPT University Academic Portal</h1>
+        <div class="header-right">
+            <div class="app-buttons">
+                <img src="/placeholder.svg?height=40&width=120&text=App+Store" alt="App Store" class="app-button">
+                <img src="/placeholder.svg?height=40&width=120&text=Google+Play" alt="Google Play" class="app-button">
+            </div>
+            <div>
+                <div class="qr-code">
+                    <div>QR Code<br>Hỗ trợ kỹ thuật FAP</div>
+                </div>
+                <div class="status-buttons">
+                    <span class="status-btn green">Member GDAA</span>
+                    <span class="status-btn blue">Support</span>
+                    <span class="status-btn green">CAMPUS-FPT Hòa Lạc</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Loading indicator -->
+    <div class="loading">Loading chat session</div>
+
+    <!-- Main banner -->
+    <section class="main-banner">
+        <div class="banner-pattern"></div>
+        <div class="banner-content">
+            <div class="fpt-logo">FPT</div>
+            <div>Trường Đại học FPT</div>
+            <h2 class="banner-title">LIÊN TIẾP THĂNG HẠNG</h2>
+            <div class="banner-subtitle">trên bảng xếp hạng đại học</div>
+            <div class="banner-description">phát triển bền vững toàn cầu</div>
+        </div>
+        <div class="ranking-info">
+            <div class="ranking-badge">#80</div>
+            <div>Times Higher Education</div>
+            <div>Impact Rankings 2025</div>
+            <div style="margin-top: 10px;">
+                <div>TOP 101-200</div>
+                <div>SDG4 Chất lượng giáo dục</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content wrapper -->
+    <div class="content-wrapper">
+        <!-- News section -->
+        <aside class="news-section">
+            <div class="section-header">News</div>
+            <div class="news-content">
+                <a href="#" class="news-item">Tin tức</a>
+                <a href="#" class="news-item">Xem tất cả</a>
+            </div>
+
+            <!-- Important Notice -->
+            <div class="important-notice">
+                <div class="notice-header">IMPORTANT NOTICE</div>
+                <table class="notice-table">
+                    <thead>
+                        <tr>
+                            <th>Type of notice</th>
+                            <th>Deadline</th>
+                            <th>Loại thư tức</th>
+                            <th>Hạn nộp Đơn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1. Changing major (Chuyển ngành)</td>
+                            <td>4 weeks before the new semester (4 tuần trước học kỳ mới)</td>
+                        </tr>
+                        <tr>
+                            <td>2. Changing campus (Chuyển cơ sở)</td>
+                            <td>4 weeks before the new semester (4 tuần trước học kỳ mới)</td>
+                        </tr>
+                        <tr>
+                            <td>3. Restudy (Nhập học trở lại)</td>
+                            <td>10 days before the new semester (10 ngày trước học kỳ mới)</td>
+                        </tr>
+                        <tr>
+                            <td>4. Suspend one semester (Bảo lưu học kỳ)</td>
+                            <td>1 week before the new semester (1 tuần trước học kỳ mới)</td>
+                        </tr>
+                        <tr>
+                            <td>5. Suspend one semester to take repeated course (Tạm nghỉ học 1 học kỳ để thi lại)</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-content">
+            <!-- Academic Information -->
+            <section class="content-section">
+                <div class="content-section-header">Academic Information</div>
+                <div class="content-section-body">
+                    <h4>Registration/Application (Thủ tục/Đơn từ)</h4>
+                    <ul class="content-list">
+                        <li><a href="#">Suspend one semester to take repeated course</a></li>
+                        <li><a href="#">Suspend (Xin tạm hoãn Mã số mới học kỳ đã học lại) (Hủy bỏ xin tạm hoãn)</a></li>
+                        <li><a href="#">Suspend one semester to take repeated course (Xin tạm nghỉ một học kỳ) (Hủy bỏ xin tạm nghỉ)</a></li>
+                        <li><a href="#">Move out class (Xin thôi học có lý do chính đáng)</a></li>
+                        <li><a href="#">Đăng ký học môn học tại trường khác</a></li>
+                        <li><a href="#">Register extra courses (Đăng ký thêm học đề chính kỳ)</a></li>
+                        <li><a href="#">Register to improve mark (Đăng ký học cải thiện điểm)</a></li>
+                        <li><a href="#">Register to repeat a course (Đăng ký học lại)</a></li>
+                        <li><a href="#">Cancel registration (Hủy đăng ký học)</a></li>
+                        <li><a href="#">Register Free Elective Courses (Đăng ký môn tự chọn)</a></li>
+                        <li><a href="#">Send Application (Gửi đơn) | View Application (Xem đơn)</a></li>
+                        <li><a href="#">Xin xác nhận sinh viên</a></li>
+                        <li><a href="#">Choose paid items (Lựa chọn các khoản nộp) - Thanh toán</a></li>
+                        <li><a href="#">Yêu cầu đổi chỗ ngồi với sinh viên</a></li>
+                        <li><a href="#">Sinh viên điểm danh bằng mã được cấp</a></li>
+                        <li><a href="#">Wishlist Course (Danh sách môn học cần học) | Register wishlist (Đăng ký)</a></li>
+                        <li><a href="#">Đề nghị hỗ trợ sinh phí khối nghiệp | View</a></li>
+                        <li><a href="#">Đăng ký học vượt kỳ</a></li>
+                        <li><a href="#">Đăng ký học phụ đạo</a></li>
+                        <li><a href="#">Đăng ký báo hiểu y tế</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Information Access -->
+            <section class="content-section">
+                <div class="content-section-header" style="background-color: #2196F3;">Information Access/Tra cứu thông tin</div>
+                <div class="content-section-body">
+                    <ul class="content-list">
+                        <li><a href="#">University timetable (Lịch học)</a></li>
+                        <li><a href="#">Tuition fee per course (Biểu học phí)</a></li>
+                        <li><a href="#">Weekly timetable (Thời khóa biểu hàng tuần)</a></li>
+                        <li><a href="#">View exam schedules (Xem lịch thi)</a></li>
+                        <li><a href="#">View Syllabus (Xem chương trình môn học)</a></li>
+                        <li><a href="#">EduNext student guideline <span class="new-badge">NEW</span></a></li>
+                        <li><a href="#">Help Desk</a></li>
+                        <li><a href="#">Tài liệu hướng dẫn: Đánh hướng cho sinh viên</a></li>
+                        <li><a href="#">Student book room <span class="new-badge">NEW</span></a></li>
+                        <li><a href="#">Thông báo Mỹ quát CƯT | xét khóa luận tốt nghiệp</a></li>
+                        <li><a href="#">Nâng cấp phần mềm SAFE EXAM BROWSER (SEB) <span class="new-badge">NEW</span></a></li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">Feedback/Ý kiến</h4>
+                    <ul class="content-list">
+                        <li><a href="#">Feedback about teaching (Ý kiến về việc giảng dạy)</a></li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">Reports/Báo cáo</h4>
+                    <ul class="content-list">
+                        <li><a href="#">Attendance report (Báo cáo điểm danh)</a></li>
+                        <li><a href="#">Mark Report (Báo cáo điểm)</a></li>
+                        <li><a href="#">Academic Transcript (Báo cáo điểm)</a></li>
+                        <li><a href="#">Curriculum (Khung chương trình)</a></li>
+                        <li><a href="#">Transaction history (Lịch sử giao dịch)</a></li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">Others/Khác</h4>
+                    <ul class="content-list">
+                        <li><a href="#">Student Profile Update Profile</a></li>
+                        <li><a href="#">View semester room | Xem thông tin về học kỳ, phòng</a></li>
+                        <li><a href="#">Các loại chứng chỉ</a></li>
+                        <li><a href="#">Report điểm phòng thi</a></li>
+                        <li><a href="#">How to access Wiley eBook on VitalSource platform <span class="new-badge">NEW</span></a></li>
+                        <li><a href="#">Download EGStudent <span class="new-badge">NEW</span></a></li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">Regulations/Các quy định</h4>
+                    <ul class="content-list">
+                        <li><a href="#">Regulations</a></li>
+                        <li><a href="#">Dormitory regulations (Nội quy KTX Hà Nội)</a></li>
+                        <li><a href="#">Dormitory regulations (Nội quy KTX Cần Thơ)</a></li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">Courses on FPTU-Coursera</h4>
+                    <ul class="content-list">
+                        <li><a href="#">Announcement</a></li>
+                        <li><a href="#">Ask member</a></li>
+                        <li><a href="#">View answer</a></li>
+                        <li><a href="#">Submit certificates</a></li>
+                        <li><a href="#">Certificate submission guideline</a></li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Mọi góp ý, thắc mắc xin liên hệ: Phòng dịch vụ sinh viên Email: <a href="mailto:dichvusinhvien@fe.edu.vn">dichvusinhvien@fe.edu.vn</a>, Điện thoại: <strong>(024)7308 13 13</strong></p>
+        <p>© Powered by <a href="#">FPT University</a> | <a href="#">CMS</a> | <a href="#">library</a> | <a href="#">books24x7</a></p>
+        <p><a href="#">Thông tin KTX</a> | <a href="#">Thông tin KTX →Hòa Lạc - On Campus Dormitory</a></p>
+    </footer>
+    <script src="chatbot.js"></script>
+</body>
+</html>
+
